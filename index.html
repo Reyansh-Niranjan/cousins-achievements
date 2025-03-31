@@ -35,38 +35,40 @@
   </footer>
 
   <script>
-  function fetchAchievements() {
-    fetch('https://api.getform.io/v1/forms/bllyxmxb?token=WqvblsqvQauk09w8LnuVCU0lULfsXAoFeI5tGilGbwJiICFDQ0mhqgyevrWz')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log("Fetched data:", data);
-        const list = document.getElementById('achievementsList');
-        list.innerHTML = "";
-        // See what the JSON structure is:
-        // For example, if the submissions are in data.submissions, adjust accordingly:
-        const submissions = data.submissions || data; // Adjust based on actual response
-        // Sort submissions by a timestamp field if available, e.g., submission.created_at
-        if (submissions && submissions.sort) {
-          submissions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // adjust field names accordingly
-        }
-        submissions.forEach(entry => {
-          const li = document.createElement('li');
-          // Adjust the property names based on the returned JSON.
-          li.innerHTML = `<strong>${entry.fields.name}:</strong> ${entry.fields.achievement}`;
-          list.appendChild(li);
-        });
-      })
-      .catch(error => console.error('Error fetching submissions:', error));
-  }
-  fetchAchievements();
-  
-  // Optionally, refresh the data every minute:
-  // setInterval(fetchAchievements, 60000);
+  // Replace these placeholders with your actual form ID and token.
+  const formId = 'bllyxmxb';
+  const token = 'WqvblsqvQauk09w8LnuVCU0lULfsXAoFeI5tGilGbwJiICFDQ0mhqgyevrWz';
+  const url = `https://api.getform.io/v1/forms/${formId}?token=${token}`;
+
+  fetch(url)
+    .then(response => {
+      console.log("HTTP Status:", response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Fetched Data:", data);
+      // Check the exact structure of the returned JSON.
+      // If the data is wrapped in a key, e.g., data or submissions, log it:
+      
+      // For illustration, let's assume it might be wrapped (uncomment if needed):
+      // const submissions = data.data || data; 
+      
+      // For now, we assume it returns an array directly:
+      const submissions = data; 
+      
+      const list = document.getElementById('achievementsList');
+      list.innerHTML = "";
+      submissions.forEach(entry => {
+        // Inspect the entry structure in the browser console and adjust field names
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${entry.fields?.name || entry.name}:</strong> ${entry.fields?.achievement || entry.achievement}`;
+        list.appendChild(li);
+      });
+    })
+    .catch(error => console.error('Error fetching submissions:', error));
 </script>
 </body>
 </html>
