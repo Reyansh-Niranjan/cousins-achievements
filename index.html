@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cousins Achievements</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Cousins Achievements</h1>
+    <p>Share and view the amazing achievements of your cousins!</p>
+  </header>
+
+  <main>
+    <section class="form-section">
+      <!-- Update the form action with your Staticman endpoint if you plan to use it -->
+      <form id="achievementForm" 
+            action="https://staticman.net/v3/entry/Reyansh-Niranjan/cousins-achievements/main/achievements" 
+            method="POST">
+        <input type="text" name="fields[name]" placeholder="Your Name" required>
+        <input type="text" name="fields[achievement]" placeholder="Your Achievement" required>
+        <button type="submit">Submit Achievement</button>
+      </form>
+    </section>
+
+    <section class="achievements-section">
+      <h2>All Achievements</h2>
+      <ul id="achievementsList">
+        <!-- Data will be loaded here via JavaScript -->
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Cousins Achievements | Built with ❤️</p>
+  </footer>
+
+  <script>
+    function fetchAchievements() {
+      fetch('achievements.json')
+        .then(response => response.json())
+        .then(data => {
+          const list = document.getElementById('achievementsList');
+          list.innerHTML = "";
+          data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+          data.forEach(entry => {
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>${entry.name}:</strong> ${entry.achievement}`;
+            list.appendChild(li);
+          });
+        })
+        .catch(error => console.error('Error fetching achievements:', error));
+    }
+    fetchAchievements();
+  </script>
+</body>
+</html>
