@@ -1,7 +1,0 @@
-submissions:
-  allowedFields: ["name", "achievement"]
-  branch: "main"
-  path: "achievements"
-  commitMessage: "Add new achievement from Staticman"
-  pullRequestTitle: "New Achievement Submission"
-  output: "json"
