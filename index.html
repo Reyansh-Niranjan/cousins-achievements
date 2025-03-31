@@ -35,22 +35,38 @@
   </footer>
 
   <script>
-    function fetchAchievements() {
-      fetch('achievements.json')
-        .then(response => response.json())
-        .then(data => {
-          const list = document.getElementById('achievementsList');
-          list.innerHTML = "";
-          data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-          data.forEach(entry => {
-            const li = document.createElement('li');
-            li.innerHTML = `<strong>${entry.name}:</strong> ${entry.achievement}`;
-            list.appendChild(li);
-          });
-        })
-        .catch(error => console.error('Error fetching achievements:', error));
-    }
-    fetchAchievements();
-  </script>
+  function fetchAchievements() {
+    fetch('https://api.getform.io/v1/forms/bllyxmxb?token=WqvblsqvQauk09w8LnuVCU0lULfsXAoFeI5tGilGbwJiICFDQ0mhqgyevrWz')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Fetched data:", data);
+        const list = document.getElementById('achievementsList');
+        list.innerHTML = "";
+        // See what the JSON structure is:
+        // For example, if the submissions are in data.submissions, adjust accordingly:
+        const submissions = data.submissions || data; // Adjust based on actual response
+        // Sort submissions by a timestamp field if available, e.g., submission.created_at
+        if (submissions && submissions.sort) {
+          submissions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // adjust field names accordingly
+        }
+        submissions.forEach(entry => {
+          const li = document.createElement('li');
+          // Adjust the property names based on the returned JSON.
+          li.innerHTML = `<strong>${entry.fields.name}:</strong> ${entry.fields.achievement}`;
+          list.appendChild(li);
+        });
+      })
+      .catch(error => console.error('Error fetching submissions:', error));
+  }
+  fetchAchievements();
+  
+  // Optionally, refresh the data every minute:
+  // setInterval(fetchAchievements, 60000);
+</script>
 </body>
 </html>
