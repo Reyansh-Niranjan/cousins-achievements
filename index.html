@@ -35,40 +35,48 @@
   </footer>
 
   <script>
-  // Replace these placeholders with your actual form ID and token.
-  const formId = "bllyxmxb";
-  const token = "WqvblsqvQauk09w8LnuVCU0lULfsXAoFeI5tGilGbwJiICFDQ0mhqgyevrWz";
-  const url = `https://api.getform.io/v1/forms/${formId}?token=${token}`; // Fixed template literal
-
-  fetch(url)
-    .then(response => {
-      console.log("HTTP Status:", response.status);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    // Use the submissions endpoint without the token in the query.
+    const apiUrl = 'https://api.getform.io/v1/forms/bllyxmxb/submissions';
+  
+    // Removed debug log for production
+  
+    fetch(apiUrl, {
+      headers: {
+        'X-GETFORM-API-KEY': 'A8QO9lWIwH5vP5u2X67exc63XQ63eeR1aa0BjAl4qjkZVoFzYkSubvW4jdBS'
       }
-      return response.json();
     })
-    .then(data => {
-      console.log("Fetched Data:", data);
-      // Check the exact structure of the returned JSON.
-      // If the data is wrapped in a key, e.g., data or submissions, log it:
-      
-      // For illustration, let's assume it might be wrapped (uncomment if needed):
-      // const submissions = data.data || data; 
-      
-      // For now, we assume it returns an array directly:
-      const submissions = data; 
-      
-      const list = document.getElementById('achievementsList');
-      list.innerHTML = "";
-      submissions.forEach(entry => {
-        // Inspect the entry structure in the browser console and adjust field names
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${entry.fields?.name || entry.name}:</strong> ${entry.fields?.achievement || entry.achievement}`;
-        list.appendChild(li);
-      });
-    })
-    .catch(error => console.error('Error fetching submissions:', error));
-</script>
+      .then(response => {
+        console.log("HTTP Status:", response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Fetched Data:", data);
+        const list = document.getElementById('achievementsList');
+        list.innerHTML = "";
+  
+        const submissions = Array.isArray(data) ? data : (data.data || []);
+        if (submissions.length === 0) {
+          list.innerHTML = "<li>No achievements yet!</li>";
+        } else {
+          submissions.sort((a, b) => {
+            const dateA = new Date(a.created_at || a.timestamp);
+            const dateB = new Date(b.created_at || b.timestamp);
+            return dateB - dateA; // Sort in descending order by date
+          });
+
+          submissions.forEach(entry => {
+            const li = document.createElement('li');
+            let name = entry.fields && entry.fields.name ? entry.fields.name : (entry.name || "Unknown");
+            let achievement = entry.fields && entry.fields.achievement ? entry.fields.achievement : (entry.achievement || "No achievement provided");
+            li.innerHTML = `<strong>${name}:</strong> ${achievement}`;
+            list.appendChild(li);
+          });
+        }
+      })
+      .catch(error => console.error('Error fetching submissions:', error));
+  </script>
 </body>
 </html>
